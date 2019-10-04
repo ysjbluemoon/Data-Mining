@@ -2,7 +2,7 @@
 title: "HW1"
 author: "Sijia Yue"
 date: "10/1/2019"
-output: pdf_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -318,6 +318,5 @@ summary_table =
 summary_table
 ```
 
-In lasso regression, no matter we use 5 fold CV or BIC to choose the model, we both get the same model with 2 predictors. The coefficients and the errors are exactly the same. In princinpal component regression, the model selects all 8 directions. In best subset linear regression, again cross validation and BIC selects the same model with 2 predictors.
 
 To summarize, I would choose the lasso regression for parsimony consideration and it reaches the smallest test error and standard error.
