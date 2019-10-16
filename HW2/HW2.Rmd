@@ -85,31 +85,6 @@ for (i in 1:100) {
 smooth_spline_pred = bind_cols(smooth_spline_pred)
 ```
 
-### Generate a matrix of fitted values of OSL with linear model
-```{r}
-colnames(ols_linear_pred) = c(1:100)
-```
-
-### Generate a matrix of fitted values of OSL with cubic polynomial model
-```{r}
-colnames(ols_cub_pred) = c(1:100)
-```
-
-### Generate a matrix of fitted values of cubic spline
-```{r}
-colnames(cub_spline_pred) = c(1:100)
-```
-
-### Generate a matrix of fitted values of natural cubic spline
-```{r}
-colnames(ncub_spline_pred) = c(1:100)
-```
-
-### Generate a matrix of fitted values of smoothing spline
-```{r}
-colnames(smooth_spline_pred) = c(1:100)
-```
-
 ### For each method/model, compute the pointwise variance of fitted values across the 100 training sets. This gives you a vector of pointwise variance.
 
 ```{r}
@@ -124,17 +99,20 @@ var_df = data_frame(x,ols_linear_var,ols_cub_var,cub_spline_var,ncub_spline_var,
 ### Plot the pointwise variance curves (against x) for each method/model. 
 ```{r}
 ggplot(var_df) +
-  geom_line(aes(x = x, y = ols_cub_var, color = "red")) +
-  geom_point(aes(x = x, y = ols_cub_var, color = "red")) +
-  geom_line(aes(x = x, y = ols_linear_var, color = "pink")) +
-  geom_point(aes(x = x, y = ols_linear_var, color = "pink")) +
-  geom_line(aes(x = x, y = cub_spline_var, color = "blue")) +
-  geom_point(aes(x = x, y = cub_spline_var, color = "blue")) +
-  geom_line(aes(x = x, y = ncub_spline_var, color = "green")) +
-  geom_point(aes(x = x, y = ncub_spline_var, color = "green")) +
-  geom_line(aes(x = x, y = smooth_spline_var, color = "yellow")) +
-  geom_point(aes(x = x, y = smooth_spline_var, color = "yellow")) +
-  theme_bw()
+  geom_line(aes(x = x, y = ols_cub_var, color = "OLS Cubic Spline")) +
+  geom_point(aes(x = x, y = ols_cub_var, color = "OLS Cubic Spline")) +
+  geom_line(aes(x = x, y = ols_linear_var, color = "OLS Linear Spline")) +
+  geom_point(aes(x = x, y = ols_linear_var, color = "OLS Linear Spline")) +
+  geom_line(aes(x = x, y = cub_spline_var, color = "Cubic Spline")) +
+  geom_point(aes(x = x, y = cub_spline_var, color = "Cubic Spline")) +
+  geom_line(aes(x = x, y = ncub_spline_var, color = "Natural Cubic Spline")) +
+  geom_point(aes(x = x, y = ncub_spline_var, color = "Natural Cubic Spline")) +
+  geom_line(aes(x = x, y = smooth_spline_var, color = "Smoothing Spline")) +
+  geom_point(aes(x = x, y = smooth_spline_var, color = "Smoothing Spline")) +
+  theme_bw()+
+  labs(title = "Simulation results of pointwise variance between 5 models/methods",
+       x = "X",
+       y = "Pointwise variance")
 ```
 
 ## Problem 4
