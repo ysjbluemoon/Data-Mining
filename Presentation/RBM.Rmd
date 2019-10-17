@@ -5,6 +5,16 @@ date: "10/16/2019"
 output: github_document
 ---
 
+### Introduction
+
+Restricted Boltzmann Machine is an undirected graphical model. RBMs can be used for data reduction (like PCA) and can also be adjusted for classification purposes. 
+
+RBMs consist of only two layers of nodes, a hidden layer with hidden nodes and a visible layer consisting of nodes that represent the data. In most applications the visible layer is represented by binary units. Here is a graphical representation of the RBM below:
+
+```{r, include=FALSE}
+knitr::include_graphics("RBM.png")
+```
+
 ```{r setup}
 library(devtools)
 library(RBM)

@@ -3,6 +3,12 @@ Restricted Boltzmann Machine
 Sijia Yue
 10/16/2019
 
+### Introduction
+
+Restricted Boltzmann Machine is an undirected graphical model. RBMs can be used for data reduction (like PCA) and can also be adjusted for classification purposes.
+
+RBMs consist of only two layers of nodes, a hidden layer with hidden nodes and a visible layer consisting of nodes that represent the data. In most applications the visible layer is represented by binary units. Here is a graphical representation of the RBM below:
+
 ``` r
 library(devtools)
 ```
@@ -31,7 +37,7 @@ Try to plot a digit.
 image(matrix(MNIST$trainX[2, ], nrow = 28), col = grey(seq(0, 1, length = 256)))
 ```
 
-![](RBM_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](RBM_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ### Using RBM()
 
@@ -63,13 +69,13 @@ After training the RBM model you can check how well it reconstructs the data wit
 ReconstructRBM(test = test[6, ], model = modelRBM)
 ```
 
-![](RBM_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](RBM_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
 ReconstructRBM(test = test[23, ], model = modelRBM)
 ```
 
-![](RBM_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](RBM_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ### Use RBM() in classification problems
 
@@ -94,21 +100,21 @@ predRBM$ConfusionMatrix
 
     ##     truth
     ## pred   0   1   2   3   4   5   6   7   8   9
-    ##    0 191   0   5   3   1  10   3   0   2   3
-    ##    1   0 213   1   0   1   5   0   3   4   0
-    ##    2   0   1 164   6   3   2   2   2   1   1
-    ##    3   0   2   4 168   0   8   0   0   5   1
-    ##    4   0   0   3   0 182   2   0   2   2   8
-    ##    5   1   0   1   9   2 118   3   0   6   2
-    ##    6   2   1   1   2   3   6 206   0   5   0
-    ##    7   0   1   5   1   1   1   0 181   1   6
-    ##    8   3   6   4   2   2   7   2   0 149   1
-    ##    9   0   1   2   7  31   3   0  14   4 183
+    ##    0 189   0   6   6   3   6   4   0   1   7
+    ##    1   0 212   0   2   0   4   0   2   4   0
+    ##    2   0   0 159   6   1   1   0   2   0   3
+    ##    3   0   1   4 156   0  10   0   0   2   3
+    ##    4   0   0   1   1 198   3   3   4   6  11
+    ##    5   1   2   0   6   0 113   2   0   4   1
+    ##    6   2   1   5   5   6   9 206   0   5   0
+    ##    7   0   0   3   2   1   1   0 188   0   8
+    ##    8   5   8  10   9   5  12   1   1 152   5
+    ##    9   0   1   2   5  12   3   0   5   5 167
 
 ``` r
 predRBM$Accuracy
 ```
 
-    ## [1] 0.8775
+    ## [1] 0.87
 
 Reference: <https://github.com/TimoMatzen/RBM#restricted-boltzmann-machine>
