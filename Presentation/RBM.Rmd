@@ -5,8 +5,7 @@ date: "10/16/2019"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup}
 library(devtools)
 library(RBM)
 ```
@@ -34,13 +33,20 @@ image(matrix(MNIST$trainX[2, ], nrow = 28), col = grey(seq(0, 1, length = 256)))
 Use RBM() to fit the Restricted Boltzmann Machine model onto the MNIST dataset.
 
 RBM() arguments
+
 * x: binary features
+
 * y: outcomes (optional: only needed in binary classification) 
+
 * n.iter: number of iterations
+
 * n.hidden: number of nodes in hidden layer
+
 * learning.rate: learning rate ($\alpha$)
+
 * size.minibatch: size of minibatches
-* lambda: sparsity penalty lambda to prevent the system from overfitting
+
+* lambda: sparsity penalty lambda ($\lambda$) to prevent the system from overfitting
 
 ```{r}
 modelRBM <- RBM(x = train, n.iter = 1000, n.hidden = 100, size.minibatch = 10, lambda = 0.1)
@@ -64,7 +70,9 @@ modelClassRBM <- RBM(x = train, y = TrainY, n.iter = 1000, n.hidden = 100, size.
 Then use `PredictRBM()` function for prediction.
 
 This function would return two parameters:
+
 * ConfusionMatrix
+
 * Accuracy
 ```{r}
 predRBM <- PredictRBM(test = test, labels = TestY, model = modelClassRBM)
@@ -72,3 +80,5 @@ predRBM$ConfusionMatrix
 predRBM$Accuracy
 ```
 
+Reference:
+https://github.com/TimoMatzen/RBM#restricted-boltzmann-machine
