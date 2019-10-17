@@ -11,9 +11,11 @@ Restricted Boltzmann Machine is an undirected graphical model. RBMs can be used 
 
 RBMs consist of only two layers of nodes, a hidden layer with hidden nodes and a visible layer consisting of nodes that represent the data. In most applications the visible layer is represented by binary units. Here is a graphical representation of the RBM below:
 
-```{r, include=FALSE}
+```{r}
 knitr::include_graphics("RBM.png")
 ```
+
+### Load the library
 
 ```{r setup}
 library(devtools)
@@ -22,7 +24,7 @@ library(RBM)
 
 ### Load MNIST data
 
-The MNIST dataset is a hand-written numbers dataset and was downloaded from Kaggle. The library already has the dataset built in.
+The MNIST dataset is a hand-written numbers dataset and was downloaded from Kaggle. The library already has the dataset built in and normalized the data between 0 and 1.
 
 ```{r}
 data(MNIST)
@@ -38,7 +40,7 @@ Try to plot a digit.
 image(matrix(MNIST$trainX[2, ], nrow = 28), col = grey(seq(0, 1, length = 256)))
 ```
 
-### Using RBM()
+### Using RBM() for classification problems
 
 Use RBM() to fit the Restricted Boltzmann Machine model onto the MNIST dataset.
 
@@ -46,7 +48,7 @@ RBM() arguments
 
 * x: binary features
 
-* y: outcomes (optional: only needed in binary classification) 
+* y: outcomes
 
 * n.iter: number of iterations
 
@@ -58,24 +60,11 @@ RBM() arguments
 
 * lambda: sparsity penalty lambda ($\lambda$) to prevent the system from overfitting
 
-```{r}
-modelRBM <- RBM(x = train, n.iter = 1000, n.hidden = 100, size.minibatch = 10, lambda = 0.1)
-```
-
-After training the RBM model you can check how well it reconstructs the data with the ReconstructRBM() function:
-
-```{r}
-ReconstructRBM(test = test[6, ], model = modelRBM)
-ReconstructRBM(test = test[23, ], model = modelRBM)
-```
-
-### Use RBM() in classification problems
-
-We can use the `RBM()` function again, the only difference is that we now also provide the labels as the y argument:
 
 ```{r}
 modelClassRBM <- RBM(x = train, y = TrainY, n.iter = 1000, n.hidden = 100, size.minibatch = 10, lambda = 0.1)
 ```
+
 
 Then use `PredictRBM()` function for prediction.
 

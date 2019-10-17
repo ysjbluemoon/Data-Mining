@@ -10,6 +10,14 @@ Restricted Boltzmann Machine is an undirected graphical model. RBMs can be used 
 RBMs consist of only two layers of nodes, a hidden layer with hidden nodes and a visible layer consisting of nodes that represent the data. In most applications the visible layer is represented by binary units. Here is a graphical representation of the RBM below:
 
 ``` r
+knitr::include_graphics("RBM.png")
+```
+
+![](RBM.png)
+
+### Load the library
+
+``` r
 library(devtools)
 ```
 
@@ -21,7 +29,7 @@ library(RBM)
 
 ### Load MNIST data
 
-The MNIST dataset is a hand-written numbers dataset and was downloaded from Kaggle. The library already has the dataset built in.
+The MNIST dataset is a hand-written numbers dataset and was downloaded from Kaggle. The library already has the dataset built in and normalized the data between 0 and 1.
 
 ``` r
 data(MNIST)
@@ -39,7 +47,7 @@ image(matrix(MNIST$trainX[2, ], nrow = 28), col = grey(seq(0, 1, length = 256)))
 
 ![](RBM_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-### Using RBM()
+### Using RBM() for classification problems
 
 Use RBM() to fit the Restricted Boltzmann Machine model onto the MNIST dataset.
 
@@ -47,7 +55,7 @@ RBM() arguments
 
 -   x: binary features
 
--   y: outcomes (optional: only needed in binary classification)
+-   y: outcomes
 
 -   n.iter: number of iterations
 
@@ -58,28 +66,6 @@ RBM() arguments
 -   size.minibatch: size of minibatches
 
 -   lambda: sparsity penalty lambda (*λ*) to prevent the system from overfitting
-
-``` r
-modelRBM <- RBM(x = train, n.iter = 1000, n.hidden = 100, size.minibatch = 10, lambda = 0.1)
-```
-
-After training the RBM model you can check how well it reconstructs the data with the ReconstructRBM() function:
-
-``` r
-ReconstructRBM(test = test[6, ], model = modelRBM)
-```
-
-![](RBM_files/figure-markdown_github/unnamed-chunk-5-1.png)
-
-``` r
-ReconstructRBM(test = test[23, ], model = modelRBM)
-```
-
-![](RBM_files/figure-markdown_github/unnamed-chunk-5-2.png)
-
-### Use RBM() in classification problems
-
-We can use the `RBM()` function again, the only difference is that we now also provide the labels as the y argument:
 
 ``` r
 modelClassRBM <- RBM(x = train, y = TrainY, n.iter = 1000, n.hidden = 100, size.minibatch = 10, lambda = 0.1)
@@ -100,21 +86,21 @@ predRBM$ConfusionMatrix
 
     ##     truth
     ## pred   0   1   2   3   4   5   6   7   8   9
-    ##    0 189   0   6   6   3   6   4   0   1   7
-    ##    1   0 212   0   2   0   4   0   2   4   0
-    ##    2   0   0 159   6   1   1   0   2   0   3
-    ##    3   0   1   4 156   0  10   0   0   2   3
-    ##    4   0   0   1   1 198   3   3   4   6  11
-    ##    5   1   2   0   6   0 113   2   0   4   1
-    ##    6   2   1   5   5   6   9 206   0   5   0
-    ##    7   0   0   3   2   1   1   0 188   0   8
-    ##    8   5   8  10   9   5  12   1   1 152   5
-    ##    9   0   1   2   5  12   3   0   5   5 167
+    ##    0 191   0   6   8   1  10   2   0   3   6
+    ##    1   0 216   0   3   0   5   0   2   2   0
+    ##    2   0   0 162   4   3   1   2   3   1   3
+    ##    3   0   1   5 167   0  14   0   1   6   3
+    ##    4   0   0   5   0 188   2   0   2   4   5
+    ##    5   0   1   1   3   0 110   2   0   6   2
+    ##    6   2   1   2   4   5   8 209   0   4   1
+    ##    7   0   0   2   2   1   0   0 182   0   8
+    ##    8   4   5   5   3   3   8   1   1 148   1
+    ##    9   0   1   2   4  25   4   0  11   5 176
 
 ``` r
 predRBM$Accuracy
 ```
 
-    ## [1] 0.87
+    ## [1] 0.8745
 
 Reference: <https://github.com/TimoMatzen/RBM#restricted-boltzmann-machine>
