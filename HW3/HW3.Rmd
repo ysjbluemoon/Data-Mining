@@ -1,0 +1,81 @@
+---
+title: "HW3"
+author: "Sijia Yue"
+date: "11/5/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(e1071)
+library(ada)
+```
+
+```{r}
+df_train = read_table("synth.tr.txt") %>% 
+  mutate(yc = as.factor(yc)) %>% 
+  as.data.frame()
+df_test = read_table("synth.te.txt") %>% 
+  mutate(yc = as.factor(yc)) %>% 
+  as.data.frame()
+```
+
+## Construct a linear support vector classifier
+
+```{r}
+set.seed(313)
+# tune the lowest cost
+tune_cost = tune(svm, yc ~., data = df_train, kernel = "linear", range = list(cost = c(1:10)))
+tune_cost
+# train the model
+svm_Linear <- svm(yc~., data = df_train, kernel = "linear", scale = FALSE, cost = 2)
+# predict on test set
+test_pred <- predict(svm_Linear, df_test)
+# get the test error
+test_error = mean(test_pred != df_test$yc)
+# get the standard error of the test error
+se = sd(test_pred != df_test$yc)/sqrt(nrow(df_test))
+# visualize the predction
+plot(svm_Linear, df_test)
+```
+
+The test error is `r round(test_error, 3)` and the standard error is `r round(se, 4)`.
+
+## Construct a support vector classifier with Radial kernel.
+
+```{r}
+set.seed(333)
+# tune the lowest cost
+tune_cost = tune(svm, yc ~., data = df_train, kernel = "radial", range = list(cost = c(1:10)))
+# train the model
+svm_radial <- svm(yc~., data = df_train, kernel = "radial", scale = FALSE, cost = 8)
+# predict on test set
+test_pred <- predict(svm_radial, df_test)
+# get the test error
+test_error = mean(test_pred != df_test$yc)
+# get the standard error of the test error
+se = sd(test_pred != df_test$yc)/sqrt(nrow(df_test))
+# visualize the predction
+plot(svm_radial, df_test)
+```
+
+The test error is `r round(test_error, 3)` and the standard error is `r round(se, 4)`.
+
+## Construct a classifier using AdaBoost algorithm (with 50 boosting iterations) with decision stumps as weak learners.
+
+```{r}
+set.seed(333)
+# train the model
+ada_fit <- ada(yc ~., data = df_train, iter = 50)
+# predict on test set
+test_pred <- predict(ada_fit, df_test)
+# get the test error
+test_error = mean(test_pred != df_test$yc)
+# get the standard error of the test error
+se = sd(test_pred != df_test$yc)/sqrt(nrow(df_test))
+# visualize the predction
+plot(ada_fit)
+```
+
+The test error is `r round(test_error, 3)` and the standard error is `r round(se, 4)`.
