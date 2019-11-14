@@ -1,0 +1,131 @@
+---
+title: "HW4"
+author: "Sijia Yue"
+date: "11/13/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ISLR)
+library(tidyverse)
+library(caret)
+library(tree)
+```
+
+## Q1
+Write two function to generate the results:
+
+```{r}
+x_isred_boot = c(0.1,0.15,0.2,0.2,0.55,0.6,0.6,0.65,0.7, 0.75)
+
+majority_clf = function(votes){
+  pro_votes = sum(x_isred_boot>0.5)
+  majority_is_pro = (length(x_isred_boot)/2) < pro_votes
+  return(majority_is_pro)
+}
+avg_clf = function(votes){
+  avg = mean(votes)
+  return(avg>0.5)
+}
+
+majority_clf(x_isred_boot)
+avg_clf(x_isred_boot)
+```
+
+When implementing majority vote, the final classification is red.
+
+When calculating the average probability, the final classification is green.
+
+
+## Q2
+
+### (a) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations
+```{r}
+set.seed(200)
+data(OJ)
+random_code = sample(1:nrow(OJ), 800, replace = F)
+df_train = OJ[random_code,]
+df_test = OJ[-random_code,]
+head(df_train)
+```
+
+### (b) Fit a tree to the training data, with Purchase as the response and the other variables as predictors. Use the summary() function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
+```{r}
+fit_tree = tree(Purchase ~., df_train)
+summary(fit_tree)
+```
+
+6 parameters are used in the tree construction.
+There are 10 terminal nodes and the training error rate is 0.1425.
+
+### (c) Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
+```{r}
+fit_tree
+```
+
+I pick the 9th node. The node is separated according to `LoyalCH` > 0.0356415. There are 121 subjects in the class that 0.0356415 < `LoyalCH` < 0.276142 and the deviance is 117.700. The overall prediction for this group is MM and the proportion of data points in this gorup having class MM is 0.80992. This node is a significant node.
+
+### (d) Create a plot of the tree, and interpret the results.
+```{r}
+plot(fit_tree)
+text(fit_tree)
+```
+
+The tree only use `LoyalCH`, `SalePriceMM`, `SpecialCH`, `PriceDiff`, `ListPriceDiff` and `STORE`    for splitting. The root is splitted base on `LoyalCH` < 0.48285. Four out of five leaves on the right branch give the prediction `CH`, while two out of five on the left brance give the prediction `MM`.
+
+### (e) Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+```{r}
+pred_tree = predict(fit_tree, df_test, type = 'class')
+confusionMatrix(pred_tree,df_test$Purchase)
+1 - sum(pred_tree == df_test$Purchase)/nrow(df_test)
+```
+
+The test error rate is 0.178.
+
+### (f) Apply the cv.tree() function to the training set in order to determine the optimal tree size.
+```{r}
+set.seed(200)
+cv_tree = cv.tree(fit_tree)
+cv_tree
+```
+
+### (g) Produce a plot with tree size on the x-axis and cross-validated classification error rate on the y-axis.
+```{r}
+plot(x = cv_tree$size, y =cv_tree$dev, xlab = "tree size", ylab = "CV error rate", type = "b")
+```
+
+### (h) Which tree size corresponds to the lowest cross-validated classification error rate?
+```{r}
+cv_tree$size[which(cv_tree$dev== min(cv_tree$dev))]
+```
+
+Tree size equals to 6 and 7 correspond to the lowest cross-validation error rate.
+
+### (i) Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation. If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.
+```{r}
+set.seed(200)
+prune_tree = prune.misclass(fit_tree)
+prune_tree$size[which(prune_tree$dev == min(prune_tree$dev))]
+prune_tree = prune.misclass(fit_tree, best = 5)
+```
+
+##(k) Compare the test error rates between the pruned and unpruned trees. Which is higher?
+```{r}
+pred_prune_tree = predict(prune_tree, df_test, type ='class')
+1 - sum(pred_prune_tree == df_test$Purchase)/nrow(df_test)
+```
+
+They are the same.
+
+## Q3
+### (a) Read data
+```{r}
+gene = read.csv("Ch10Ex11.csv", header = F)
+```
+
+### (b) Apply hierarchical clustering to the samples using correlation based distance, and plot the dendrogram.
+```{r}
+
+```
+
