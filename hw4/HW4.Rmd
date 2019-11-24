@@ -47,7 +47,9 @@ data(OJ)
 random_code = sample(1:nrow(OJ), 800, replace = F)
 df_train = OJ[random_code,]
 df_test = OJ[-random_code,]
-head(df_train)
+
+dim(df_train)
+dim(df_test)
 ```
 
 ### (b) Fit a tree to the training data, with Purchase as the response and the other variables as predictors. Use the summary() function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
@@ -56,15 +58,15 @@ fit_tree = tree(Purchase ~., df_train)
 summary(fit_tree)
 ```
 
-6 parameters are used in the tree construction.
-There are 10 terminal nodes and the training error rate is 0.1425.
+3 variables are used in the tree construction. 
+There are 6 terminal nodes and the training error rate is 0.1713.
 
 ### (c) Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
 ```{r}
 fit_tree
 ```
 
-I pick the 9th node. The node is separated according to `LoyalCH` > 0.0356415. There are 121 subjects in the class that 0.0356415 < `LoyalCH` < 0.276142 and the deviance is 117.700. The overall prediction for this group is MM and the proportion of data points in this gorup having class MM is 0.80992. This node is a significant node.
+I pick the first node. The node is separated according to `LoyalCH` < 0.0356415. There are 55 subjects in the class that `LoyalCH` < 0.0356415 and the deviance is 9.996. The prediction for this group is MM and the proportion of data points in this group having class MM is 0.98182.
 
 ### (d) Create a plot of the tree, and interpret the results.
 ```{r}
@@ -72,7 +74,7 @@ plot(fit_tree)
 text(fit_tree)
 ```
 
-The tree only use `LoyalCH`, `SalePriceMM`, `SpecialCH`, `PriceDiff`, `ListPriceDiff` and `STORE`    for splitting. The root is splitted base on `LoyalCH` < 0.48285. Four out of five leaves on the right branch give the prediction `CH`, while two out of five on the left brance give the prediction `MM`.
+The tree only uses `LoyalCH`, `ListPriceDiff`, and `PctDiscMM` for splitting. The root is splitted base on `LoyalCH` < 0.445519. Three out of four leaves on the right branch give the prediction `CH`, while both nodes on the left brance give the prediction `MM`.
 
 ### (e) Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
 ```{r}
@@ -92,15 +94,17 @@ cv_tree
 
 ### (g) Produce a plot with tree size on the x-axis and cross-validated classification error rate on the y-axis.
 ```{r}
-plot(x = cv_tree$size, y =cv_tree$dev, xlab = "tree size", ylab = "CV error rate", type = "b")
+set.seed(200)
+cv_tree2 = cv.tree(fit_tree, method="misclass")
+plot(x = cv_tree2$size, y = cv_tree2$dev, xlab = "tree size", ylab = "Dev", type = "b")
 ```
 
 ### (h) Which tree size corresponds to the lowest cross-validated classification error rate?
 ```{r}
-cv_tree$size[which(cv_tree$dev== min(cv_tree$dev))]
+cv_tree2$size[which(cv_tree2$dev == min(cv_tree2$dev))]
 ```
 
-Tree size equals to 6 and 7 correspond to the lowest cross-validation error rate.
+Tree size equals to 6 and 5 correspond to the lowest cross-validation error rate.
 
 ### (i) Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation. If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.
 ```{r}
@@ -109,6 +113,8 @@ prune_tree = prune.misclass(fit_tree)
 prune_tree$size[which(prune_tree$dev == min(prune_tree$dev))]
 prune_tree = prune.misclass(fit_tree, best = 5)
 ```
+
+Since tree sizes 5 and 6 both have the lowest CV error rate, we use 5 nodes based on the parsinomy principle.
 
 ##(k) Compare the test error rates between the pruned and unpruned trees. Which is higher?
 ```{r}
@@ -124,8 +130,48 @@ They are the same.
 gene = read.csv("Ch10Ex11.csv", header = F)
 ```
 
-### (b) Apply hierarchical clustering to the samples using correlation based distance, and plot the dendrogram.
+### (b) Apply hierarchical clustering to the samples using correlation based distance, and plot the dendrogram. Does the genes separate the samples into the two groups? Do your results depend on the type of linkage used?
+
 ```{r}
+set.seed(200)
+dis = as.dist(1 - cor(gene))
+d_comp = hclust(dis, method = 'complete')
+d_single = hclust(dis, method = 'single')
+d_avg = hclust(dis, method = 'average')
+plot(d_comp, main = "Complete Linkage with Correlation-Based Distance",xlab = "", sub="")
+plot(d_single, main = "Single Linkage with Correlation-Based Distance",xlab = "", sub="")
+plot(d_avg, main = "Average Linkage with Correlation-Based Distance",xlab = "", sub="")
 
 ```
+
+My results depend on the type of linkage used. In complete linkage, the genes separate the samples into 2 groups. In single linkage, the genes separate the samples into 2 groups. In average linkage, the genes separate the samples into 3 groups.
+
+### (c) Find which genes differ the most across the two groups.
+
+I will use PCA to find the genes differ the most.
+
+```{r}
+gene_pca = prcomp(t(gene))
+
+df_pca = gene_pca$rotation %>% 
+  as_tibble()
+
+tibble(
+    gene_id = 1:1000,
+   sum_loading = apply(df_pca[1:10], 1, sum)) %>% 
+  arrange(desc(abs(sum_loading))) %>% 
+  head(15) %>% 
+  knitr::kable(digits = 2)
+
+tibble(
+    gene_id = 1:1000,
+   sum_loading = apply(df_pca, 1, sum)) %>% 
+  arrange(desc(abs(sum_loading))) %>% 
+  head(15) %>% 
+  knitr::kable(digits = 2)
+```
+
+The first table shows the top 15 genes based on the sum of PC1 to PC10.
+
+The second table shows the top 15 genes based on the sum of all PCs.
 
